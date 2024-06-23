@@ -13,7 +13,7 @@ from pydantic import (
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
-from utils import parse_cors
+from app.utils import parse_cors
 from dotenv import load_dotenv
 import os
 
@@ -27,10 +27,13 @@ class Settings(BaseSettings):
     )
     API_V1_STR: str = os.getenv("API_V1_STR", "/api/v1")
     SECRET_KEY: str = os.getenv("SECRET_KEY", secrets.token_urlsafe(32))
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480"))
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
+        os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480")
+    )
     DOMAIN: str = os.getenv("DOMAIN", "localhost")
-    ENVIRONMENT: Literal["local", "staging", "production"] = os.getenv("ENVIRONMENT", "local")
-
+    ENVIRONMENT: Literal["local", "staging", "production"] = os.getenv(
+        "ENVIRONMENT", "local"
+    )
 
     @computed_field  # type: ignore[misc]
     @property
@@ -40,9 +43,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[
-        list[AnyUrl] | str, BeforeValidator(parse_cors)
-    ] = parse_cors(os.getenv("BACKEND_CORS_ORIGINS", ""))
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
+        parse_cors(os.getenv("BACKEND_CORS_ORIGINS", ""))
+    )
 
     PROJECT_NAME: str = os.getenv("PROJECT_NAME", "youtube_downloader")
     SENTRY_DSN: HttpUrl | None = os.getenv("SENTRY_DSN", None)
@@ -51,7 +54,6 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "")
-
 
     @computed_field  # type: ignore[misc]
     @property
@@ -64,11 +66,12 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
-    
+
     FIRST_SUPERUSER: str = os.getenv("FIRST_SUPERUSER", "")
     FIRST_SUPERUSER_PASSWORD: str = os.getenv("FIRST_SUPERUSER_PASSWORD", "")
-    USERS_OPEN_REGISTRATION: bool = os.getenv("USERS_OPEN_REGISTRATION", "").lower() in ["true", "yes", "1"]
-
+    USERS_OPEN_REGISTRATION: bool = os.getenv(
+        "USERS_OPEN_REGISTRATION", ""
+    ).lower() in ["true", "yes", "1"]
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
@@ -80,7 +83,6 @@ class Settings(BaseSettings):
                 warnings.warn(message, stacklevel=1)
             else:
                 raise ValueError(message)
-            
 
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:
@@ -91,5 +93,6 @@ class Settings(BaseSettings):
         )
 
         return self
+
 
 settings = Settings()  # type: ignore

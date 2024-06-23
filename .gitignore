@@ -1,1 +1,4 @@
 venv
+/app/_pycache_
+/app/core/_pycache_
+/app/api/router/_pycache_
