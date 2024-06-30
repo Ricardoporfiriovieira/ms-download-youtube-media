@@ -1,6 +1,6 @@
 import secrets
 import warnings
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, List, Literal
 
 from pydantic import (
     AnyUrl,
@@ -43,11 +43,13 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
+    # BACKEND_CORS_ORIGINS: List[str] = parse_cors(os.getenv("BACKEND_CORS_ORIGINS", ""))
+
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
         parse_cors(os.getenv("BACKEND_CORS_ORIGINS", ""))
     )
 
-    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "youtube_downloader")
+    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "download")
     SENTRY_DSN: HttpUrl | None = os.getenv("SENTRY_DSN", None)
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "")
     POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))

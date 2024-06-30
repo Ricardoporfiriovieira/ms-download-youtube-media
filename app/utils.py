@@ -1,6 +1,7 @@
-def parse_cors(v: any) -> list[str] | str:
-    if isinstance(v, str) and not v.startswith("["):
-        return [i.strip() for i in v.split(",")]
-    elif isinstance(v, list | str):
-        return v
-    raise ValueError(v)
+from typing import List
+
+
+def parse_cors(origins: str) -> List[str]:
+    if not origins:
+        return []
+    return [origin.strip() for origin in origins.split(",") if origin.strip()]
