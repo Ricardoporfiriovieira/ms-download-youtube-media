@@ -4,6 +4,7 @@ from pytube.exceptions import RegexMatchError, AgeRestrictedError
 from fastapi import HTTPException, Query
 from fastapi.responses import FileResponse
 from os import path, rename
+import re
 
 router = APIRouter()
 
@@ -30,9 +31,12 @@ async def download_video(
     if not file_path:
         raise HTTPException(status_code=500, detail="Erro: could not dowload video")
 
+    special_chars_pattern = r"[\/:?\#\[\]@!$&\'()*+,;=~\-_.%]"
+    filename = path.basename(file_path)
+
     return FileResponse(
         path=file_path,
-        filename=path.basename(file_path),
+        filename=re.sub(special_chars_pattern, "-", filename),
         media_type="application/octet-stream",
     )
 

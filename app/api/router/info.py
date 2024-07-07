@@ -16,4 +16,4 @@ async def get_video_info(url: str = Query(..., description="Youtube video URL"))
     except AgeRestrictedError:
         raise HTTPException(status_code=403, detail="Age restriction error")
 
-    return YoutubeInfo(title=yt.title, image=yt.thumbnail_url)
+    return YoutubeInfo(title=yt.title, image=yt.thumbnail_url, url=url)
